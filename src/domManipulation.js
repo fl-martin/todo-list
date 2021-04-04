@@ -1,4 +1,4 @@
-import {toDo, toDos, project} from "./logic.js"
+import {toDo, toDos, project,deleteTodo} from "./logic.js"
 
 //FORM TO CREATE TODO
 const toDoForm = ()=> {
@@ -9,6 +9,7 @@ const toDoForm = ()=> {
     const priority = document.createElement('input');
     const projectID = document.createElement('input'); //que sea menu desplegable mostrando los distintos proyectos como opcion
     const add = document.createElement('button');
+    //BUTTON CLOSE FORM
     form.append(name,date,description,priority,projectID,add);
     name.id = 'name';
     date.id = 'date';
@@ -21,7 +22,7 @@ const toDoForm = ()=> {
         addToDo();
         form.style.display = "none";
         clearForm();
-        console.log(toDos[0].getName());   //TO TEST
+        console.log(toDos[toDos.length - 1].getName());   //TEST IF ADDED TO TODOS CORRECTLY
     });
     form.id = 'form';
     return form;
@@ -34,8 +35,9 @@ const addToDo = ()=> {
     const description = document.getElementById('description').value;
     const priority = document.getElementById('priority').value;
     const projectID = document.getElementById('projectID').value;
-    const index = toDos.length - 1;
+    const index = toDos.length;
     toDos.push(toDo(name,date,description,priority,projectID,index));
+    document.getElementById('content').appendChild(elementToDo(toDos[toDos.length - 1]))
 }
 
 const clearForm = ()=> {
@@ -56,25 +58,29 @@ const elementToDo = (displayMe)=> {
     const projectDisplay = document.createElement('div');
     const checkDisplay = document.createElement('div');
     const details = document.createElement('button');
+    const removeTodo = document.createElement('button');
     nameDisplay.textContent = displayMe.getName();
     dateDisplay.textContent = displayMe.getDate();
     descriptionDisplay.textContent = displayMe.getDescription();
     priorityDisplay.textContent = displayMe.getPriority();
     projectDisplay.textContent = displayMe.getProjectID();
     checkDisplay.textContent = displayMe.getCheckState();
-    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details);
-    element.classList.add('listDisplay');
+    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details,removeTodo);
+    elementToDo.classList.add('defaultDisplay');
     details.addEventListener('click',(e)=>{
-        changeDisplay(e);
+        changeDisplay(e.target.parentNode);
     });
-    return displayToDo;
+    removeTodo.addEventListener('click',()=>{
+        deleteTodo(displayMe.getIndex());
+        elementToDo.parentNode.removeChild(elementToDo);
+    })
+    return elementToDo;
 }
 
 //CLASSES CHANGE THE SIZE AND CONTENT OF EACH TODO DISPLAY
-const changeDisplay = (e)=> {
-   if(e.target.parentNode.className == 'listDisplay')
-   e.target.parentNode.className == 'detailDisplay';
-   else e.target.parentNode.className == 'listDisplay';
+const changeDisplay = (parentNode)=> {
+   parentNode.classList.toggle('defaultDisplay');
+   parentNode.classList.toggle('detailDisplay');
 }
 
 //DISPLAY PROJECT

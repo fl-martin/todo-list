@@ -17,6 +17,11 @@ const toDo = (name,date,description,priority,projectID,index) => {
     return {getName, changeName, getDate, changeDate, getDescription, changeDescription, getPriority, getProjectID, changeProjectID, changePriority, getCheckState,check,getIndex}
 }
 
+//DELETE TODO
+const deleteTodo = (index)=> {
+    toDos[index] = '';
+}
+
 //ARRAY OF TODOS
 const toDos = [];
 
@@ -35,4 +40,4 @@ const project = (name)=> {
 
 //DELETE PROJECT
 
-export {toDo, toDos, project}
+export {toDo,toDos, project,deleteTodo}

@@ -13,7 +13,7 @@ import {toDoForm} from "./domManipulation.js"
 //const proyecto = project('primera');
 //onsole.log(projectIDgenerator);
 
-//const tudu = toDo('fede','3','piola','baja','0');
+//addtoDo('fede','3','piola','baja','0');
 //console.log(toDos[0].getName());
 //console.log(toDos.length - 1);
 
@@ -21,3 +21,4 @@ import {toDoForm} from "./domManipulation.js"
 
 //document.getElementById('content').appendChild(toDoForm());
 //console.table(proyecto.projectToDos());   //probar display de este array con todos cargados
+
