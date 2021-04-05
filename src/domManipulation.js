@@ -6,25 +6,56 @@ const toDoForm = ()=> {
     const name = document.createElement('input');
     const date = document.createElement('input');
     const description = document.createElement('input');
-    const priority = document.createElement('input');
+    const priority = document.createElement('div');
+    const low = document.createElement('input');
+    const lowLabel = document.createElement('label');
+    const mid = document.createElement('input');
+    const midLabel = document.createElement('label');
+    const high = document.createElement('input');
+    const highLabel = document.createElement('label');
     const projectID = document.createElement('input'); //que sea menu desplegable mostrando los distintos proyectos como opcion
     const add = document.createElement('button');
-    //BUTTON CLOSE FORM
-    form.append(name,date,description,priority,projectID,add);
+    const close = document.createElement('button');
+    low.type = 'radio';
+    mid.type = 'radio';
+    high.type = 'radio';
+    low.name = 'priority';
+    mid.name = 'priority';
+    high.name = 'priority';
+    low.value = 'low';
+    mid.value = 'low';
+    high.value = 'high';
+    lowLabel.htmlFor = 'low';
+    lowLabel.textContent = 'Low';
+    midLabel.htmlFor = 'mid';
+    midLabel.textContent = 'Mid';
+    highLabel.htmlFor = 'high';
+    highLabel.textContent = 'High';   
+    priority.append(low,lowLabel,mid,midLabel,high,highLabel);
+    form.append(name,date,description,priority,projectID,add,close);
+    form.id = 'form';
     name.id = 'name';
     date.id = 'date';
     description.id = 'description';
     priority.id = 'priority';
+    low.id = 'lowPriority';
+    mid.id = 'midPriority';
+    high.id = 'highPriority';
     projectID.id = 'projectID';
-    add.id = 'add';
+    add.id = 'addToDo';
+    close.id = 'closeForm';
     add.type = 'button';
+    close.type = 'button';
     add.addEventListener('click',()=> {
         addToDo();
         form.style.display = "none";
         clearForm();
-        console.log(toDos[toDos.length - 1].getName());   //TEST IF ADDED TO TODOS CORRECTLY
+        console.log(toDos[toDos.length - 1].getPriority());   //TEST IF ADDED TO TODOS CORRECTLY
     });
-    form.id = 'form';
+    close.addEventListener('click',()=> {
+        form.style.display = "none";
+        clearForm();
+    });
     return form;
 }
 
@@ -33,7 +64,7 @@ const addToDo = ()=> {
     const name = document.getElementById('name').value;
     const date = document.getElementById('date').value;
     const description = document.getElementById('description').value;
-    const priority = document.getElementById('priority').value;
+    const priority = document.getElementById('form').elements['priority'].value;
     const projectID = document.getElementById('projectID').value;
     const index = toDos.length;
     toDos.push(toDo(name,date,description,priority,projectID,index));
@@ -62,9 +93,9 @@ const elementToDo = (displayMe)=> {
     nameDisplay.textContent = displayMe.getName();
     dateDisplay.textContent = displayMe.getDate();
     descriptionDisplay.textContent = displayMe.getDescription();
-    priorityDisplay.textContent = displayMe.getPriority();
+    priorityDisplay.textContent = displayMe.getPriority();  //CAMBIAR POR COLOR
     projectDisplay.textContent = displayMe.getProjectID();
-    checkDisplay.textContent = displayMe.getCheckState();
+    checkDisplay.textContent = displayMe.getCheckState();  //CAMBIAR POR SELECTOR GREEN/RED
     elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details,removeTodo);
     elementToDo.classList.add('defaultDisplay');
     details.addEventListener('click',(e)=>{
