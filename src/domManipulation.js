@@ -59,7 +59,12 @@ const toDoForm = ()=> {
     return form;
 }
 
-//TAKE VALUES INSERTED BY USER TO CREATE NEW TODO AND PUSH IT TO THE ARRAY, CLEAR THE FORM
+//DISPLAY FORM
+export const displayForm = ()=> {
+    document.getElementById('form').style.display = "flex";
+}
+
+//TAKES VALUES INSERTED BY USER TO CREATE NEW TODO AND PUSH IT TO THE ARRAY / CLEAR THE FORM
 const addToDo = ()=> {   
     const name = document.getElementById('name').value;
     const date = document.getElementById('date').value;
@@ -90,16 +95,20 @@ const elementToDo = (displayMe)=> {
     const checkDisplay = document.createElement('div');
     const details = document.createElement('button');
     const removeTodo = document.createElement('button');
+    const editTodo = document.createElement('button');
     nameDisplay.textContent = displayMe.getName();
     dateDisplay.textContent = displayMe.getDate();
     descriptionDisplay.textContent = displayMe.getDescription();
     priorityDisplay.textContent = displayMe.getPriority();  //CAMBIAR POR COLOR
     projectDisplay.textContent = displayMe.getProjectID();
     checkDisplay.textContent = displayMe.getCheckState();  //CAMBIAR POR SELECTOR GREEN/RED
-    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details,removeTodo);
+    descriptionDisplay.style.display = 'none';
+    editTodo.style.display = 'none';
+    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details,removeTodo,editTodo);
     elementToDo.classList.add('defaultDisplay');
     details.addEventListener('click',(e)=>{
-        changeDisplay(e.target.parentNode);
+        changeDisplayClass(e.target.parentNode);
+        displayDescriptionEdit(e.target.parentNode);
     });
     removeTodo.addEventListener('click',()=>{
         deleteTodo(displayMe.getIndex());
@@ -109,9 +118,20 @@ const elementToDo = (displayMe)=> {
 }
 
 //CLASSES CHANGE THE SIZE AND CONTENT OF EACH TODO DISPLAY
-const changeDisplay = (parentNode)=> {
+const changeDisplayClass = (parentNode)=> {
    parentNode.classList.toggle('defaultDisplay');
    parentNode.classList.toggle('detailDisplay');
+}
+
+const displayDescriptionEdit = (parentNode)=> {
+    if(parentNode.classList.contains('defaultDisplay')) {
+        parentNode.childNodes[2].style.display = 'none';
+        parentNode.childNodes[8].style.display = 'none';
+    }
+    else {
+        parentNode.childNodes[2].style.display = 'block';
+        parentNode.childNodes[8].style.display = 'block';
+    } 
 }
 
 //DISPLAY PROJECT
@@ -122,4 +142,4 @@ const toogleDisplayProject = (project)=> {
     });
 }
 
-export {toDoForm,changeDisplay,toogleDisplayProject}
+export {toDoForm,toogleDisplayProject}

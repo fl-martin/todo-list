@@ -40,4 +40,5 @@ const project = (name)=> {
 
 //DELETE PROJECT
 
-export {toDo,toDos, project,deleteTodo}
+
+export {toDo, toDos, project, deleteTodo}
