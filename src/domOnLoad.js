@@ -1,4 +1,5 @@
-import { toDoForm, displayForm } from "./domManipulation";
+import {toDoForm, projectForm, displayForm, refreshProjects } from "./domManipulation";
+import {createProject} from "./logic";
 
 export const initialDom = ()=> {
     const banner = document.createElement('header');
@@ -9,11 +10,20 @@ export const initialDom = ()=> {
     const todosView = document.createElement('div');
     const addNew = document.createElement('button');
     const footer = document.createElement('footer');
+    newProject.id = 'newProject';
     addNew.id = "addNew";
     projectsMenu.append(projectsH,newProject);
     todosView.appendChild(addNew);
     mainContent.append(projectsMenu,todosView);
-    document.getElementById('content').append(banner,mainContent,footer,toDoForm());
-    addNew.addEventListener('click',displayForm);
+    document.getElementById('content').append(banner,mainContent,footer,toDoForm(),projectForm());
+    newProject.addEventListener('click',displayForm.bind(this,'projectForm'));
+    addNew.addEventListener('click',()=> {
+        refreshProjects();
+        displayForm('form');
+    })
 }
 
+
+export const defaultProject = ()=> {
+    createProject("myList");
+}

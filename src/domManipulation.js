@@ -1,4 +1,4 @@
-import {toDo, toDos, project,deleteTodo} from "./logic.js"
+import {toDo,toDos,projects,createProject,deleteTodo} from "./logic.js"
 
 //FORM TO CREATE TODO
 const toDoForm = ()=> {
@@ -13,7 +13,7 @@ const toDoForm = ()=> {
     const midLabel = document.createElement('label');
     const high = document.createElement('input');
     const highLabel = document.createElement('label');
-    const projectID = document.createElement('input'); //que sea menu desplegable mostrando los distintos proyectos como opcion
+    const projectID = document.createElement('select');
     const add = document.createElement('button');
     const close = document.createElement('button');
     low.type = 'radio';
@@ -48,20 +48,32 @@ const toDoForm = ()=> {
     close.type = 'button';
     add.addEventListener('click',()=> {
         addToDo();
-        form.style.display = "none";
+        hideForm('form');
         clearForm();
-        console.log(toDos[toDos.length - 1].getPriority());   //TEST IF ADDED TO TODOS CORRECTLY
     });
     close.addEventListener('click',()=> {
-        form.style.display = "none";
+        hideForm('form');
         clearForm();
     });
     return form;
 }
 
+//REFRESH PROJECT OPTIONS
+const refreshProjects = ()=> {
+    document.getElementById('projectID').options.length = projects.length;
+    for(let i = 0; i < projects.length; i++) {
+        document.getElementById('projectID').options[i].textContent = projects[i].getName();
+    }
+}
+
 //DISPLAY FORM
-export const displayForm = ()=> {
-    document.getElementById('form').style.display = "flex";
+const displayForm = (formid)=> {
+    document.getElementById(formid).style.display = "flex";
+}
+
+//HIDE FORM
+const hideForm = (formid)=> {
+    document.getElementById(formid).style.display = "none";
 }
 
 //TAKES VALUES INSERTED BY USER TO CREATE NEW TODO AND PUSH IT TO THE ARRAY / CLEAR THE FORM
@@ -70,7 +82,7 @@ const addToDo = ()=> {
     const date = document.getElementById('date').value;
     const description = document.getElementById('description').value;
     const priority = document.getElementById('form').elements['priority'].value;
-    const projectID = document.getElementById('projectID').value;
+    const projectID = document.getElementById('projectID').value;            //ASIGNAR ID DEL SELECCIONADO
     const index = toDos.length;
     toDos.push(toDo(name,date,description,priority,projectID,index));
     document.getElementById('content').appendChild(elementToDo(toDos[toDos.length - 1]))
@@ -134,12 +146,30 @@ const displayDescriptionEdit = (parentNode)=> {
     } 
 }
 
+//PROJECT FORM
+const projectForm = ()=> {
+    const container = document.createElement('div');
+    const textIndication = document.createElement('div');
+    const nameInput = document.createElement('input');
+    const create = document.createElement('button');
+    const close = document.createElement('button');
+    container.append(textIndication,nameInput,create,close);
+    container.id = 'projectForm';
+    create.addEventListener('click', ()=> {
+        createProject(nameInput.value);
+        hideForm('projectForm');
+        nameInput.value = '';
+    });
+    close.addEventListener('click',hideForm.bind(this,'projectForm'));
+    return container
+}
+
 //DISPLAY PROJECT
-const toogleDisplayProject = (project)=> {
+const toggleDisplayProject = (project)=> {
     const toDos = project.projectToDos();
     toDos.forEach(todo => {
         todo.style.display = "flex" ? todo.style.display = "none" : todo.style.display = "flex"
     });
 }
 
-export {toDoForm,toogleDisplayProject}
+export {projectForm,refreshProjects,toDoForm,displayForm,toggleDisplayProject}

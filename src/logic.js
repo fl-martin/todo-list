@@ -22,23 +22,30 @@ const deleteTodo = (index)=> {
     toDos[index] = '';
 }
 
-//ARRAY OF TODOS
+//TODOS AND PROJECTS ARRAYS
 const toDos = [];
+const projects = [];
 
-//EACH NEW PROJECT CREATES A NEW ID, THE LINK BETWEEN PROJECTS AND TODOS
+//FOR EACH NEW PROJECT A NEW ID IS GENERATED. THE LINK BETWEEN PROJECTS AND TODOS
 let projectIDgenerator = 0;
 
 //PROJECTS FACTORY FUNCTION
 const project = (name)=> {
     const id = projectIDgenerator;
+    const getIndex = ()=> id;
     const getName = ()=> name;
     const changeName = (newName)=> name = newName;
     const projectToDos = ()=> toDos.filter(toDo=> toDo.getProject() == id);
     (()=> projectIDgenerator++)()
-    return {getName, changeName, projectToDos}
+    return {getIndex, getName, changeName, projectToDos}
+}
+
+//CREATE PROJECT
+const createProject = (name)=> {
+    projects.push(project(name));
 }
 
 //DELETE PROJECT
 
 
-export {toDo, toDos, project, deleteTodo}
+export {toDo,toDos,projects,createProject,deleteTodo}
