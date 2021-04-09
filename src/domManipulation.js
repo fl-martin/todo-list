@@ -48,6 +48,7 @@ const toDoForm = ()=> {
     close.type = 'button';
     add.addEventListener('click',()=> {
         addToDo();
+        appendTodo(toDos[toDos.length - 1]);   //CAMBIAR ESTO POR CHECK PROJECT Y TOGGLEDISPLAY?
         hideForm('form');
         clearForm();
     });
@@ -58,11 +59,12 @@ const toDoForm = ()=> {
     return form;
 }
 
-//REFRESH PROJECT OPTIONS
+//REFRESH PROJECT OPTIONS, STORE PROJECT ID
 const refreshProjects = ()=> {
     document.getElementById('projectID').options.length = projects.length;
     for(let i = 0; i < projects.length; i++) {
         document.getElementById('projectID').options[i].textContent = projects[i].getName();
+        document.getElementById('projectID').options[i].dataset.projectID = projects[i].getID();
     }
 }
 
@@ -82,10 +84,8 @@ const addToDo = ()=> {
     const date = document.getElementById('date').value;
     const description = document.getElementById('description').value;
     const priority = document.getElementById('form').elements['priority'].value;
-    const projectID = document.getElementById('projectID').value;            //ASIGNAR ID DEL SELECCIONADO
-    const index = toDos.length;
-    toDos.push(toDo(name,date,description,priority,projectID,index));
-    document.getElementById('content').appendChild(elementToDo(toDos[toDos.length - 1]))
+    const projectID = document.getElementById('projectID').options[document.getElementById('projectID').selectedIndex].dataset.projectID; //ACCESS DATASET OF SELECTED OPTION
+    toDos.push(toDo(name,date,description,priority,projectID));
 }
 
 const clearForm = ()=> {
@@ -108,11 +108,12 @@ const elementToDo = (displayMe)=> {
     const details = document.createElement('button');
     const removeTodo = document.createElement('button');
     const editTodo = document.createElement('button');
+    elementToDo.dataset.todoid = toDos.indexOf(displayMe);
     nameDisplay.textContent = displayMe.getName();
     dateDisplay.textContent = displayMe.getDate();
     descriptionDisplay.textContent = displayMe.getDescription();
     priorityDisplay.textContent = displayMe.getPriority();  //CAMBIAR POR COLOR
-    projectDisplay.textContent = displayMe.getProjectID();
+    projectDisplay.textContent = displayMe.getProjectID();  //NO
     checkDisplay.textContent = displayMe.getCheckState();  //CAMBIAR POR SELECTOR GREEN/RED
     descriptionDisplay.style.display = 'none';
     editTodo.style.display = 'none';
@@ -123,10 +124,21 @@ const elementToDo = (displayMe)=> {
         displayDescriptionEdit(e.target.parentNode);
     });
     removeTodo.addEventListener('click',()=>{
-        deleteTodo(displayMe.getIndex());
-        elementToDo.parentNode.removeChild(elementToDo);
+        deleteTodo(toDos.indexOf(displayMe));
+        removeTodoElement(elementToDo);
     })
     return elementToDo;
+}
+
+//APPEND TODO
+const appendTodo = (appendMe)=> {
+    document.getElementById('todosView').appendChild(elementToDo(appendMe));
+}
+
+//REMOVE TODO
+const removeTodoElement = (removeMe)=> {
+    console.log(removeMe);
+    removeMe.parentNode.removeChild(removeMe);
 }
 
 //CLASSES CHANGE THE SIZE AND CONTENT OF EACH TODO DISPLAY
@@ -137,8 +149,8 @@ const changeDisplayClass = (parentNode)=> {
 
 const displayDescriptionEdit = (parentNode)=> {
     if(parentNode.classList.contains('defaultDisplay')) {
-        parentNode.childNodes[2].style.display = 'none';
-        parentNode.childNodes[8].style.display = 'none';
+        parentNode.childNodes[2].style.display = 'none';  //DESCRIPTION
+        parentNode.childNodes[8].style.display = 'none';  //EDIT BUTTON
     }
     else {
         parentNode.childNodes[2].style.display = 'block';
@@ -164,12 +176,28 @@ const projectForm = ()=> {
     return container
 }
 
-//DISPLAY PROJECT
-const toggleDisplayProject = (project)=> {
+//PROJECT LIST
+const projectList = ()=> {
+    projects.forEach((project)=> {
+        const projectName = document.createElement('div');
+        const displayCheckbox = document.createElement('input');
+        displayCheckbox.type = 'checkbox';
+        projectName.textContent = project.getName();
+        displayCheckbox.classList.add('displayCheckbox');
+        displayCheckbox.addEventListener('change',toggleDisplayProject.bind(this,project,displayCheckbox));
+        document.getElementById('projectsMenu').append(projectName,displayCheckbox);
+    })
+}
+
+//DISPLAY (APPEND/REMOVE) PROJECT
+const toggleDisplayProject = (project,displayCheckbox)=> {
     const toDos = project.projectToDos();
     toDos.forEach(todo => {
-        todo.style.display = "flex" ? todo.style.display = "none" : todo.style.display = "flex"
+        if(todo !== "") {
+            if (displayCheckbox.checked == true) appendTodo(todo);
+            else if (displayCheckbox.checked == false) removeTodoElement(document.querySelectorAll('div[data-todoid]')[toDos.indexOf(todo)]);
+        }
     });
 }
 
-export {projectForm,refreshProjects,toDoForm,displayForm,toggleDisplayProject}
+export {projectForm,refreshProjects,projectList,toDoForm,displayForm,toggleDisplayProject}

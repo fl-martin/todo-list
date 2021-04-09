@@ -13,8 +13,7 @@ const toDo = (name,date,description,priority,projectID,index) => {
     let checkedState = false;
     const getCheckState = ()=> checkedState;
     const check = ()=> checkedState = !checkedState;
-    const getIndex = ()=> index;
-    return {getName, changeName, getDate, changeDate, getDescription, changeDescription, getPriority, getProjectID, changeProjectID, changePriority, getCheckState,check,getIndex}
+    return {getName, changeName, getDate, changeDate, getDescription, changeDescription, getPriority, getProjectID, changeProjectID, changePriority, getCheckState,check}
 }
 
 //DELETE TODO
@@ -32,12 +31,12 @@ let projectIDgenerator = 0;
 //PROJECTS FACTORY FUNCTION
 const project = (name)=> {
     const id = projectIDgenerator;
-    const getIndex = ()=> id;
+    const getID = ()=> id;
     const getName = ()=> name;
     const changeName = (newName)=> name = newName;
-    const projectToDos = ()=> toDos.filter(toDo=> toDo.getProject() == id);
+    const projectToDos = ()=> toDos.filter(toDo=> toDo.getProjectID() == id);
     (()=> projectIDgenerator++)()
-    return {getIndex, getName, changeName, projectToDos}
+    return {getID, getName, changeName, projectToDos}
 }
 
 //CREATE PROJECT
