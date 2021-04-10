@@ -7,14 +7,16 @@ export const initialDom = ()=> {
     const projectsMenu = document.createElement('nav');
     const projectsH = document.createElement('h1');
     const newProject = document.createElement('button');
+    const projectsList = document.createElement('div');
     const todosView = document.createElement('div');
     const addNew = document.createElement('button');
     const footer = document.createElement('footer');
     projectsMenu.id = 'projectsMenu';
+    projectsList.id = 'projectsList';
     newProject.id = 'newProject';
     todosView.id = 'todosView';
     addNew.id = "addNew";
-    projectsMenu.append(projectsH,newProject);
+    projectsMenu.append(projectsH,projectsList,newProject);
     todosView.appendChild(addNew);
     mainContent.append(projectsMenu,todosView);
     document.getElementById('content').append(banner,mainContent,footer,toDoForm(),projectForm());

@@ -48,7 +48,7 @@ const toDoForm = ()=> {
     close.type = 'button';
     add.addEventListener('click',()=> {
         addToDo();
-        appendTodo(toDos[toDos.length - 1]);   //CAMBIAR ESTO POR CHECK PROJECT Y TOGGLEDISPLAY?
+        checkUsedProject();
         hideForm('form');
         clearForm();
     });
@@ -169,6 +169,7 @@ const projectForm = ()=> {
     container.id = 'projectForm';
     create.addEventListener('click', ()=> {
         createProject(nameInput.value);
+        projectList();                       //que no se borre todo y volver, sino queda unchecked
         hideForm('projectForm');
         nameInput.value = '';
     });
@@ -176,16 +177,38 @@ const projectForm = ()=> {
     return container
 }
 
+//UPDATE PROJECT LIST
+const checkUsedProject = ()=> {
+    const projectID = document.getElementById('projectID').options[document.getElementById('projectID').selectedIndex].dataset.projectID;
+    const checkbox = document.querySelector(`div[data-projectid = "${projectID}"]`).childNodes[1];
+    const project = projects[projectID];
+    if (checkbox.checked == false) checkbox.checked = true;
+    toggleDisplayProject(project,checkbox);
+
+}
+
+//EMPTY PROJECT LIST     no se usa, reutilizar par delete project
+const emptyProjectList = ()=> {
+    const projectsList = document.getElementById('projectsList');
+    while (projectsList.lastChild) projectsList.removeChild(projectsList.lastChild);
+}
+
 //PROJECT LIST
 const projectList = ()=> {
-    projects.forEach((project)=> {
+    //generar "newprojects" en base a projectid que no existan en el DOM, filter projects¿?
+    const newProjects 
+    console.log(newProjects);
+    projects.forEach((project)=> {     //esto se va a cambiar por new projects
+        const projectDisplay = document.createElement('div');
         const projectName = document.createElement('div');
         const displayCheckbox = document.createElement('input');
+        projectDisplay.dataset.projectid = project.getID();
         displayCheckbox.type = 'checkbox';
         projectName.textContent = project.getName();
         displayCheckbox.classList.add('displayCheckbox');
         displayCheckbox.addEventListener('change',toggleDisplayProject.bind(this,project,displayCheckbox));
-        document.getElementById('projectsMenu').append(projectName,displayCheckbox);
+        projectDisplay.append(projectName,displayCheckbox);
+        document.getElementById('projectsList').appendChild(projectDisplay);
     })
 }
 
