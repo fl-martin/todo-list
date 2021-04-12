@@ -35,7 +35,7 @@ const project = (name)=> {
     const getName = ()=> name;
     const changeName = (newName)=> name = newName;
     const projectToDos = ()=> toDos.filter(toDo=> toDo.getProjectID() == id);
-    (()=> projectIDgenerator++)()
+    (()=> projectIDgenerator++)();
     return {getID, getName, changeName, projectToDos}
 }
 
