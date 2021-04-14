@@ -1,4 +1,4 @@
-import {toDo,toDos,projects,createProject,deleteTodo} from "./logic.js"
+import {toDo,toDos,projects,createProject,deleteTodo,deleteProject} from "./logic.js"
 
 //FORM TO CREATE TODO
 const toDoForm = ()=> {
@@ -48,8 +48,8 @@ const toDoForm = ()=> {
     close.type = 'button';
     add.addEventListener('click',()=> {
         addToDo();
-        checkUsedProject();
-        triggerChangeEvent('change');
+        checkNewTodoProject();
+        iterateProjectsAndCheckbox(); 
         hideForm('form');
         clearForm();
     });
@@ -142,13 +142,11 @@ const removeTodoElement = (removeMe)=> {
 }
 
 //REMOVE ALL TODOS ELEMENTS
-const removeAllTodosElements = ()=> {
-    const todosElements = document.getElementById('todosList').childNodes;
-    console.log(todosElements);
-    while (todosElements.length > 0) {
-        for(let i = 0; i < toDos.length; i++) {
-            removeTodoElement(todosElements[0]);
-        }
+const removeTodosElements = (list)=> {
+    let i = 0;
+    while (i < list.length) {
+        removeTodoElement(list[i]);
+        i++;
     }
 }
 
@@ -180,83 +178,85 @@ const projectForm = ()=> {
     container.id = 'projectForm';
     create.addEventListener('click', ()=> {
         createProject(nameInput.value);
-        projectList();                       //que no se borre todo y volver, sino queda unchecked         
+        displayProject(projects[projects.length - 1]);    
         hideForm('projectForm');
         nameInput.value = '';
-    //    displayCheckedProjects()           //que muestre los pertenecientes a los proyectos checkeados en este momento
+        iterateProjectsAndCheckbox();               
     });
     close.addEventListener('click',hideForm.bind(this,'projectForm'));
     return container
 }
 
 //UPDATE PROJECT LIST
-const checkUsedProject = ()=> {
+const checkNewTodoProject = ()=> {
     const projectID = document.getElementById('projectID').options[document.getElementById('projectID').selectedIndex].dataset.projectID;
     const checkbox = document.querySelector(`div[data-projectid = "${projectID}"]`).childNodes[1];
-    const project = projects[projectID];
     if (checkbox.checked == false) checkbox.checked = true;
 }
 
-//TRIGGER CHANGE EVENT
-const triggerChangeEvent = (eventName)=> {
-    const projectID = document.getElementById('projectID').options[document.getElementById('projectID').selectedIndex].dataset.projectID;
-    const element = document.querySelector(`div[data-projectid = "${projectID}"]`).childNodes[1]
-    const event = document.createEvent("HTMLEvents");
-    event.initEvent(eventName, false, true);
-    element.dispatchEvent(event);
-}
-
-//EMPTY PROJECT LIST     no se usa, reutilizar par delete project
-const emptyProjectList = ()=> {
-    const projectsList = document.getElementById('projectsList');
-    while (projectsList.lastChild) projectsList.removeChild(projectsList.lastChild);
+//REMOVE PROJECT 
+const removeProject = (projectDisplay)=> {
+    projectDisplay.parentNode.removeChild(projectDisplay);
+    
 }
 
 //PROJECT LIST
-const projectList = ()=> {
-    //generar "newprojects" en base a projectid que no existan en el DOM, filter projects¿?
-    // const newProjects 
-    // console.log(newProjects);
-    projects.forEach((project)=> {     //esto se va a cambiar por new projects
-        const projectDisplay = document.createElement('div');
-        const projectName = document.createElement('div');
-        const displayCheckbox = document.createElement('input');
-        projectDisplay.dataset.projectid = project.getID();
-        displayCheckbox.type = 'checkbox';
-        projectName.textContent = project.getName();
-        displayCheckbox.classList.add('displayCheckbox');
-        displayCheckbox.addEventListener('change',extractTodosForDisplay.bind(this,project,displayCheckbox));
-        projectDisplay.append(projectName,displayCheckbox);
-        document.getElementById('projectsList').appendChild(projectDisplay);
-    })
-}
-
-//DISPLAY (APPEND/REMOVE) PROJECT
-const extractTodosForDisplay = (project,displayCheckbox)=> {
-    const toDos = project.projectToDos();
-    toDos.forEach(todo => {
-        displayIfChecked(todo,displayCheckbox);
+const displayProject = (project)=> {
+    const projectDisplay = document.createElement('div');
+    const projectName = document.createElement('div');
+    const displayCheckbox = document.createElement('input');
+    const remove = document.createElement('button');
+    projectDisplay.dataset.projectid = project.getID();
+    displayCheckbox.type = 'checkbox';
+    projectName.textContent = project.getName();
+    displayCheckbox.classList.add('displayCheckbox');
+    displayCheckbox.addEventListener('change',extractTodosIDCheckboxState.bind(this,project,displayCheckbox));
+    remove.addEventListener('click',()=> {
+        removeProject(projectDisplay);
+        deleteProject(project);
+        removeTodosElements(document.querySelectorAll(`div[data-todoid = "${project.getID()}"]`));     //BORRAR TODOS DE PROJECT DELETEA2
     });
+    projectDisplay.append(projectName,displayCheckbox,remove);
+    document.getElementById('projectsList').appendChild(projectDisplay);
 }
 
-//DISPLAY CHECKED PROJECTS
-const displayIfChecked = (todo,displayCheckbox)=> {
-    if(todo !== "") {
-        if (displayCheckbox.checked == true) {
+//EXTRACT PROJECT TODOS AND INFO
+const extractTodosIDCheckboxState = (project,displayCheckbox)=> {
+    const toDos = project.projectToDos();
+    const projectID = project.getID();
+    const checkboxState = displayCheckbox.checked;
+    toggleTodosDisplay(toDos,checkboxState,projectID);
+}
+
+//TOGGLE TODOS DISPLAY
+const toggleTodosDisplay = (toDos,checkboxState,projectID)=> {
+    if (checkboxState) {
+        toDos.forEach(todo => {
             appendTodo(todo);
+        });
+    }
+    else if (!checkboxState) {
+        const listToRemove = document.querySelectorAll(`div[data-todoid = "${projectID}"]`);
+        let i = 0;
+        while (i < listToRemove.length) {
+            removeTodoElement(listToRemove[i]);
+            i++;
         }
-        else if (displayCheckbox.checked == false)  {
-                const listToRemove = document.querySelectorAll(`div[data-todoid = "${todo.getProjectID()}"]`);
-                removeTodoElement(listToRemove[0]);
-            }
-        }
+    }
+    
 }
 
 //ITERATE OVER PROJECTS AND CHECKBOX
+const iterateProjectsAndCheckbox = ()=> {
+    for (let i = 0; i < projects.length; i++) {
+        const project = projects[i];
+        const projectID = projects[i].getID();
+        const checkbox = document.querySelector(`div[data-projectid = "${projectID}"]`).childNodes[1];
+        extractTodosIDCheckboxState(project,checkbox);
+    }
+}
+
+export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,removeTodosElements}
 
 
-export {projectForm,refreshProjects,projectList,toDoForm,displayForm,removeAllTodosElements}
-
-
-//por que lista ya existente proyecto
-//SEGUIR ACA: iterar y pasar todos por EXTRACT!!!
+//CONDICIONES DE FORMS PARA CREAR PROYECTOS Y TODOS, SEGUIR CON QUE INFO MOSTRAR DE CADA TODO, CSS

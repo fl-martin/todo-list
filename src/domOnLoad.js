@@ -1,5 +1,5 @@
-import {toDoForm, projectForm, projectList, displayForm, refreshProjects, removeAllTodosElements } from "./domManipulation";
-import {createProject} from "./logic";
+import {toDoForm, projectForm, displayProject, displayForm, refreshProjects, removeTodosElements} from "./domManipulation";
+import {createProject,projects} from "./logic";
 
 export const initialDom = ()=> {
     const banner = document.createElement('header');
@@ -23,11 +23,11 @@ export const initialDom = ()=> {
     mainContent.append(projectsMenu,todosView);
     document.getElementById('content').append(banner,mainContent,footer,toDoForm(),projectForm());
     newProject.addEventListener('click',()=> {
-        removeAllTodosElements();
+        removeTodosElements(document.getElementById('todosList').childNodes);
         displayForm('projectForm');
     });
     addNew.addEventListener('click',()=> {
-        removeAllTodosElements();
+        removeTodosElements(document.getElementById('todosList').childNodes);
         refreshProjects();
         displayForm('form');
     })
@@ -35,5 +35,5 @@ export const initialDom = ()=> {
 
 export const defaultProject = ()=> {
     createProject("myList");
-    projectList();
+    displayProject(projects[projects.length - 1]);
 }

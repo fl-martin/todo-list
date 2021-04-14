@@ -18,7 +18,7 @@ const toDo = (name,date,description,priority,projectID,index) => {
 
 //DELETE TODO
 const deleteTodo = (index)=> {
-    toDos[index] = '';
+    toDos.splice(index,1);
 }
 
 //TODOS AND PROJECTS ARRAYS
@@ -45,6 +45,9 @@ const createProject = (name)=> {
 }
 
 //DELETE PROJECT
+const deleteProject = (project)=> {
+    const indexToDelete = projects.indexOf(project);
+    projects.splice(indexToDelete,1);
+}
 
-
-export {toDo,toDos,projects,createProject,deleteTodo}
+export {toDo,toDos,projects,createProject,deleteTodo,deleteProject}
