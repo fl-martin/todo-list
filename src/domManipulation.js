@@ -16,6 +16,7 @@ const toDoForm = ()=> {
     const projectID = document.createElement('select');
     const add = document.createElement('button');
     const close = document.createElement('button');
+    date.type = 'date';
     low.type = 'radio';
     mid.type = 'radio';
     high.type = 'radio';
@@ -47,11 +48,20 @@ const toDoForm = ()=> {
     add.type = 'button';
     close.type = 'button';
     add.addEventListener('click',()=> {
-        addToDo();
-        checkNewTodoProject();
-        iterateProjectsAndCheckbox(); 
-        hideForm('form');
-        clearForm();
+        console.log(name.value);
+        console.log(date.value);
+        console.log(priority.value);
+        console.log(projectID.value);
+        if (name.value !== "" && date.value !== "" && priority.value !== undefined && projectID.value !== "") {   //FORM VALIDATION
+            addToDo();
+            checkNewTodoProject();
+            iterateProjectsAndCheckbox(); 
+            hideForm('form');
+            clearForm();
+        }
+        else if (name.value == "" || date.value == "" || priority.value == undefined || projectID.value == "") {
+            alert("Your new Todo needs more information : )");
+        }
     });
     close.addEventListener('click',()=> {
         hideForm('form');
@@ -105,21 +115,23 @@ const elementToDo = (displayMe)=> {
     const descriptionDisplay = document.createElement('div');
     const priorityDisplay = document.createElement('div');
     const projectDisplay = document.createElement('div');
-    const checkDisplay = document.createElement('div');
+    const checkDisplay = document.createElement('input');
     const details = document.createElement('button');
     const removeTodo = document.createElement('button');
     const editTodo = document.createElement('button');
+    checkDisplay.type = 'checkbox';
     elementToDo.dataset.todoid = displayMe.getProjectID();
     nameDisplay.textContent = displayMe.getName();
     dateDisplay.textContent = displayMe.getDate();
     descriptionDisplay.textContent = displayMe.getDescription();
-    priorityDisplay.textContent = displayMe.getPriority();  //CAMBIAR POR COLOR
-    projectDisplay.textContent = displayMe.getProjectID();  //NO
-    checkDisplay.textContent = displayMe.getCheckState();  //CAMBIAR POR SELECTOR GREEN/RED
+    priorityDisplay.textContent = displayMe.getPriority();    //CAMBIAR POR COLOR
+    projectDisplay.textContent = displayMe.getProjectID();    //NO
+    checkDisplay.checked = displayMe.getCheckState();     //CAMBIAR POR SELECTOR GREEN/RED
     descriptionDisplay.style.display = 'none';
     editTodo.style.display = 'none';
     elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details,removeTodo,editTodo);
     elementToDo.classList.add('defaultDisplay');
+    checkDisplay.addEventListener('change',()=> displayMe.check())
     details.addEventListener('click',(e)=>{
         changeDisplayClass(e.target.parentNode);
         displayDescriptionEdit(e.target.parentNode);
@@ -177,11 +189,16 @@ const projectForm = ()=> {
     container.append(textIndication,nameInput,create,close);
     container.id = 'projectForm';
     create.addEventListener('click', ()=> {
-        createProject(nameInput.value);
-        displayProject(projects[projects.length - 1]);    
-        hideForm('projectForm');
-        nameInput.value = '';
-        iterateProjectsAndCheckbox();               
+        if (nameInput.value !== "") {                    //FORM VALIDATION
+            createProject(nameInput.value);
+            displayProject(projects[projects.length - 1]);    
+            hideForm('projectForm');
+            nameInput.value = '';
+            iterateProjectsAndCheckbox();
+        }
+        else if (nameInput.value == "") {
+            alert("Your new project needs a name : )");
+        }               
     });
     close.addEventListener('click',hideForm.bind(this,'projectForm'));
     return container
@@ -256,7 +273,8 @@ const iterateProjectsAndCheckbox = ()=> {
     }
 }
 
-export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,removeTodosElements}
+export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,hideForm,removeTodosElements}
 
 
-//CONDICIONES DE FORMS PARA CREAR PROYECTOS Y TODOS, SEGUIR CON QUE INFO MOSTRAR DE CADA TODO, CSS
+//CORREGIR VALIDACION DE FORM.PRIORITY
+//FORM INVALIDA: CAMBIAR CARTELITO SIMPATICO POR ADD CLASS INVALID, SEGUIR CON QUE INFO MOSTRAR DE CADA TODO, CSS
