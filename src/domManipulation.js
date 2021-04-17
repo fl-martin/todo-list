@@ -26,12 +26,17 @@ const toDoForm = ()=> {
     low.value = 'low';
     mid.value = 'low';
     high.value = 'high';
-    lowLabel.htmlFor = 'low';
+    lowLabel.htmlFor = 'lowPriority';
     lowLabel.textContent = 'Low';
-    midLabel.htmlFor = 'mid';
+    midLabel.htmlFor = 'midPriority';
     midLabel.textContent = 'Mid';
-    highLabel.htmlFor = 'high';
+    highLabel.htmlFor = 'highPriority';
     highLabel.textContent = 'High';   
+    name.placeholder = "Title";
+    description.placeholder = 'Description';
+    projectID.placeholder = 'Project';
+    add.textContent = 'Add';
+    close.textContent = 'Close';
     priority.append(low,lowLabel,mid,midLabel,high,highLabel);
     form.append(name,date,description,priority,projectID,add,close);
     form.id = 'form';
@@ -48,24 +53,22 @@ const toDoForm = ()=> {
     add.type = 'button';
     close.type = 'button';
     add.addEventListener('click',()=> {
-        console.log(name.value);
-        console.log(date.value);
-        console.log(priority.value);
-        console.log(projectID.value);
-        if (name.value !== "" && date.value !== "" && priority.value !== undefined && projectID.value !== "") {   //FORM VALIDATION
+        if (name.value !== "" && date.value !== "" && form.elements['priority'].value !== "" && projectID.value !== "") {   //FORM VALIDATION            
             addToDo();
             checkNewTodoProject();
             iterateProjectsAndCheckbox(); 
+            blurEffect();
             hideForm('form');
             clearForm();
         }
         else if (name.value == "" || date.value == "" || priority.value == undefined || projectID.value == "") {
-            alert("Your new Todo needs more information : )");
+            alert("Looks like your new Todo it's incomplete : o");
         }
     });
     close.addEventListener('click',()=> {
         hideForm('form');
         clearForm();
+        blurEffect();
     });
     return form;
 }
@@ -113,9 +116,10 @@ const elementToDo = (displayMe)=> {
     const nameDisplay = document.createElement('div');
     const dateDisplay = document.createElement('div');
     const descriptionDisplay = document.createElement('div');
-    const priorityDisplay = document.createElement('div');
     const projectDisplay = document.createElement('div');
+    const switcher = document.createElement('label');
     const checkDisplay = document.createElement('input');
+    const sliderRound = document.createElement('span');
     const details = document.createElement('button');
     const removeTodo = document.createElement('button');
     const editTodo = document.createElement('button');
@@ -124,14 +128,22 @@ const elementToDo = (displayMe)=> {
     nameDisplay.textContent = displayMe.getName();
     dateDisplay.textContent = displayMe.getDate();
     descriptionDisplay.textContent = displayMe.getDescription();
-    priorityDisplay.textContent = displayMe.getPriority();    //CAMBIAR POR COLOR
-    projectDisplay.textContent = displayMe.getProjectID();    //NO
-    checkDisplay.checked = displayMe.getCheckState();     //CAMBIAR POR SELECTOR GREEN/RED
+    projectDisplay.textContent = projects.filter(project => project.getID() == displayMe.getProjectID())[0].getName()
+    elementToDo.style.backgroundColor =  todoBackgroundColor(elementToDo,displayMe.getCheckState(),displayMe)
+    checkDisplay.checked = displayMe.getCheckState();
     descriptionDisplay.style.display = 'none';
     editTodo.style.display = 'none';
-    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,priorityDisplay,projectDisplay,checkDisplay,details,removeTodo,editTodo);
+    details.textContent = '+ info';
+    removeTodo.textContent = 'X'
+    switcher.append(checkDisplay,sliderRound);
+    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,projectDisplay,switcher,details,removeTodo,editTodo);
+    switcher.classList.add('switch');
+    sliderRound.classList.add('slider','sliderRound');
     elementToDo.classList.add('defaultDisplay');
-    checkDisplay.addEventListener('change',()=> displayMe.check())
+    checkDisplay.addEventListener('change',()=> {
+        displayMe.check()
+        todoBackgroundColor(elementToDo,displayMe.getCheckState(),displayMe)
+    })
     details.addEventListener('click',(e)=>{
         changeDisplayClass(e.target.parentNode);
         displayDescriptionEdit(e.target.parentNode);
@@ -141,6 +153,29 @@ const elementToDo = (displayMe)=> {
         removeTodoElement(elementToDo);
     })
     return elementToDo;
+}
+
+//TODO BACKGROUND DEFINED BY PRIORITY
+const priorityColor = (priority)=> {
+    let color;
+    switch (priority) {
+        case 'low':
+            color = 'yellow';
+        break;
+        case 'mid':
+            color = 'orange';
+        break;
+        case 'high':
+            color = 'red';
+        break;
+    }
+    return color
+}
+
+//GREEN BACKGROUND IF CHECKED
+const todoBackgroundColor = (elementTodo,checkedState,displayMe)=> {
+    if (checkedState) elementTodo.style.backgroundColor = "green";
+    else if (!checkedState) elementTodo.style.backgroundColor = priorityColor(displayMe.getPriority());
 }
 
 //APPEND TODO
@@ -186,6 +221,9 @@ const projectForm = ()=> {
     const nameInput = document.createElement('input');
     const create = document.createElement('button');
     const close = document.createElement('button');
+    nameInput.placeholder = 'Name';
+    create.textContent = 'Create';
+    close.textContent = 'Close';
     container.append(textIndication,nameInput,create,close);
     container.id = 'projectForm';
     create.addEventListener('click', ()=> {
@@ -194,13 +232,17 @@ const projectForm = ()=> {
             displayProject(projects[projects.length - 1]);    
             hideForm('projectForm');
             nameInput.value = '';
+            blurEffect();
             iterateProjectsAndCheckbox();
         }
         else if (nameInput.value == "") {
             alert("Your new project needs a name : )");
         }               
     });
-    close.addEventListener('click',hideForm.bind(this,'projectForm'));
+    close.addEventListener('click',()=> {
+        blurEffect();
+        hideForm('projectForm');
+    });
     return container
 }
 
@@ -226,6 +268,8 @@ const displayProject = (project)=> {
     projectDisplay.dataset.projectid = project.getID();
     displayCheckbox.type = 'checkbox';
     projectName.textContent = project.getName();
+    remove.textContent = 'X';
+    projectDisplay.classList.add('projectDisplay');
     displayCheckbox.classList.add('displayCheckbox');
     displayCheckbox.addEventListener('change',extractTodosIDCheckboxState.bind(this,project,displayCheckbox));
     remove.addEventListener('click',()=> {
@@ -273,8 +317,16 @@ const iterateProjectsAndCheckbox = ()=> {
     }
 }
 
-export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,hideForm,removeTodosElements}
+//BLUR EFFECT
+const blurEffect = ()=> {
+    document.getElementById('content').classList.toggle('blurred');
+
+}
+
+export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,hideForm,removeTodosElements, blurEffect}
 
 
-//CORREGIR VALIDACION DE FORM.PRIORITY
-//FORM INVALIDA: CAMBIAR CARTELITO SIMPATICO POR ADD CLASS INVALID, SEGUIR CON QUE INFO MOSTRAR DE CADA TODO, CSS
+//FORM INVALIDA: CAMBIAR CARTELITO SIMPATICO POR ADD CLASS INVALID¿?
+//OVERFLOW HORIZONTAL?
+//arreglar error al cambiar diplay detail del element todo
+//CREAR EFFECT BLUR PARA CUANDO APARECER LAS FORMS, agregar clase no blur a las forms, fijarse bien el selector query
