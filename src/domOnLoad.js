@@ -26,7 +26,6 @@ export const initialDom = ()=> {
     footer.id = 'footer';
     banner.textContent = 'todoList';
     newProject.textContent = 'New project';
-    addNew.textContent = 'Add';
     madeBy.textContent = 'Made by ';
     githubLink.textContent = 'fl-martin';
     githubLink.href = 'https://github.com/fl-martin';   
@@ -35,16 +34,17 @@ export const initialDom = ()=> {
     mainContent.append(projectsMenu,todosView);
     madeBy.appendChild(githubLink);
     footer.appendChild(madeBy);
+    addNew.appendChild(document.getElementById('plus'));
     document.getElementById('content').append(banner,mainContent,footer);
     document.querySelector('body').append(toDoForm(),projectForm());
     newProject.addEventListener('click',()=> {
-        removeTodosElements(document.getElementById('todosList').childNodes);
+    //    removeTodosElements(document.getElementById('todosList').childNodes);
         blurEffect();
         hideForm('form');
         displayForm('projectForm');
     });
     addNew.addEventListener('click',()=> {
-        removeTodosElements(document.getElementById('todosList').childNodes);
+    //    removeTodosElements(document.getElementById('todosList').childNodes);
         //blur EFFECT
         refreshProjects();
         blurEffect();

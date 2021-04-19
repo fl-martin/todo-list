@@ -1,4 +1,6 @@
-import {toDo,toDos,projects,createProject,deleteTodo,deleteProject} from "./logic.js"
+import { format } from 'date-fns';
+
+import {toDo,toDos,projects,createProject,deleteTodo,deleteProject} from "./logic.js";
 
 //FORM TO CREATE TODO
 const toDoForm = ()=> {
@@ -24,7 +26,7 @@ const toDoForm = ()=> {
     mid.name = 'priority';
     high.name = 'priority';
     low.value = 'low';
-    mid.value = 'low';
+    mid.value = 'mid';
     high.value = 'high';
     lowLabel.htmlFor = 'lowPriority';
     lowLabel.textContent = 'Low';
@@ -56,7 +58,7 @@ const toDoForm = ()=> {
         if (name.value !== "" && date.value !== "" && form.elements['priority'].value !== "" && projectID.value !== "") {   //FORM VALIDATION            
             addToDo();
             checkNewTodoProject();
-            iterateProjectsAndCheckbox(); 
+            appendTodo(toDos[toDos.length - 1]); 
             blurEffect();
             hideForm('form');
             clearForm();
@@ -122,7 +124,6 @@ const elementToDo = (displayMe)=> {
     const sliderRound = document.createElement('span');
     const details = document.createElement('button');
     const removeTodo = document.createElement('button');
-    const editTodo = document.createElement('button');
     checkDisplay.type = 'checkbox';
     elementToDo.dataset.todoid = displayMe.getProjectID();
     nameDisplay.textContent = displayMe.getName();
@@ -132,11 +133,10 @@ const elementToDo = (displayMe)=> {
     elementToDo.style.backgroundColor =  todoBackgroundColor(elementToDo,displayMe.getCheckState(),displayMe)
     checkDisplay.checked = displayMe.getCheckState();
     descriptionDisplay.style.display = 'none';
-    editTodo.style.display = 'none';
     details.textContent = '+ info';
     removeTodo.textContent = 'X'
     switcher.append(checkDisplay,sliderRound);
-    elementToDo.append(nameDisplay,dateDisplay,descriptionDisplay,projectDisplay,switcher,details,removeTodo,editTodo);
+    elementToDo.append(nameDisplay,dateDisplay,projectDisplay,switcher,details,removeTodo,descriptionDisplay);
     switcher.classList.add('switch');
     sliderRound.classList.add('slider','sliderRound');
     elementToDo.classList.add('defaultDisplay');
@@ -146,7 +146,7 @@ const elementToDo = (displayMe)=> {
     })
     details.addEventListener('click',(e)=>{
         changeDisplayClass(e.target.parentNode);
-        displayDescriptionEdit(e.target.parentNode);
+        displayDescription(e.target.parentNode);
     });
     removeTodo.addEventListener('click',()=>{
         deleteTodo(toDos.indexOf(displayMe));
@@ -203,14 +203,12 @@ const changeDisplayClass = (parentNode)=> {
    parentNode.classList.toggle('detailDisplay');
 }
 
-const displayDescriptionEdit = (parentNode)=> {
+const displayDescription = (parentNode)=> {
     if(parentNode.classList.contains('defaultDisplay')) {
-        parentNode.childNodes[2].style.display = 'none';  //DESCRIPTION
-        parentNode.childNodes[8].style.display = 'none';  //EDIT BUTTON
+        parentNode.childNodes[6].style.display = 'none';
     }
     else {
-        parentNode.childNodes[2].style.display = 'block';
-        parentNode.childNodes[8].style.display = 'block';
+        parentNode.childNodes[6].style.display = 'block';
     } 
 }
 
@@ -256,7 +254,6 @@ const checkNewTodoProject = ()=> {
 //REMOVE PROJECT 
 const removeProject = (projectDisplay)=> {
     projectDisplay.parentNode.removeChild(projectDisplay);
-    
 }
 
 //PROJECT LIST
@@ -269,6 +266,7 @@ const displayProject = (project)=> {
     displayCheckbox.type = 'checkbox';
     projectName.textContent = project.getName();
     remove.textContent = 'X';
+    projectName.classList.add('projectName');
     projectDisplay.classList.add('projectDisplay');
     displayCheckbox.classList.add('displayCheckbox');
     displayCheckbox.addEventListener('change',extractTodosIDCheckboxState.bind(this,project,displayCheckbox));
@@ -326,7 +324,18 @@ const blurEffect = ()=> {
 export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,hideForm,removeTodosElements, blurEffect}
 
 
+console.log(format(new Date(2014, 1, 11), 'yyyy-MM-dd'));
+
 //FORM INVALIDA: CAMBIAR CARTELITO SIMPATICO POR ADD CLASS INVALID¿?
-//OVERFLOW HORIZONTAL?
-//arreglar error al cambiar diplay detail del element todo
-//CREAR EFFECT BLUR PARA CUANDO APARECER LAS FORMS, agregar clase no blur a las forms, fijarse bien el selector query
+
+//enchular forms, display todo, description apareciendo abajo, transiciones
+
+/*function removeFadeOut( el, speed ) {
+    var seconds = speed/1000;
+    el.style.transition = "opacity "+seconds+"s ease";
+
+    el.style.opacity = 0;
+    setTimeout(function() {
+        el.parentNode.removeChild(el);
+    }, speed);
+}*/

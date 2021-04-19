@@ -1,10 +1,13 @@
 //TODOS FACTORY FUNCTION
-const toDo = (name,date,description,priority,projectID,index) => {
+const toDo = (name,date,description,priority,projectID) => {
     const getName = ()=> name;
     const changeName = (newName)=> name = newName;
     const getDate = ()=> date;
     const changeDate = (newDate)=> date = newDate; 
-    const getDescription = ()=> description;
+    const getDescription = ()=> {
+        if(description != "") return description;
+        else if (description == "") return "No description included";
+    }
     const changeDescription = (newDescription)=> name = newDescription;
     const getPriority = ()=> priority;
     const changePriority = (newPriority)=> priority = newPriority; 
