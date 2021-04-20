@@ -29,16 +29,16 @@ const toDoForm = ()=> {
     mid.value = 'mid';
     high.value = 'high';
     lowLabel.htmlFor = 'lowPriority';
-    lowLabel.textContent = 'Low';
+    lowLabel.textContent = 'Want';
     midLabel.htmlFor = 'midPriority';
-    midLabel.textContent = 'Mid';
+    midLabel.textContent = 'Have';
     highLabel.htmlFor = 'highPriority';
-    highLabel.textContent = 'High';   
+    highLabel.textContent = 'Must';   
     name.placeholder = "Title";
     description.placeholder = 'Description';
     projectID.placeholder = 'Project';
     add.textContent = 'Add';
-    close.textContent = 'Close';
+    close.textContent = 'X';
     priority.append(low,lowLabel,mid,midLabel,high,highLabel);
     form.append(name,date,description,priority,projectID,add,close);
     form.id = 'form';
@@ -86,12 +86,24 @@ const refreshProjects = ()=> {
 
 //DISPLAY FORM
 const displayForm = (formid)=> {
+    const el = document.getElementById(formid);
+    var seconds = 500/1000;
     document.getElementById(formid).style.display = "flex";
+    setTimeout(function() {
+        el.style.transition = "opacity "+seconds+"s ease";
+        el.style.opacity = 1;
+    }, 500);
 }
 
 //HIDE FORM
 const hideForm = (formid)=> {
+    const el = document.getElementById(formid);
+    var seconds = 300/1000;
+    el.style.transition = "opacity "+seconds+"s ease";
+    el.style.opacity = 0;
+    setTimeout(function() {
     document.getElementById(formid).style.display = "none";
+    }, 500);
 }
 
 //TAKES VALUES INSERTED BY USER TO CREATE NEW TODO AND PUSH IT TO THE ARRAY / CLEAR THE FORM
@@ -136,10 +148,11 @@ const elementToDo = (displayMe)=> {
     details.textContent = '+ info';
     removeTodo.textContent = 'X'
     switcher.append(checkDisplay,sliderRound);
-    elementToDo.append(nameDisplay,dateDisplay,projectDisplay,switcher,details,removeTodo,descriptionDisplay);
+    elementToDo.append(nameDisplay,dateDisplay,projectDisplay,switcher,details,descriptionDisplay,removeTodo);
     switcher.classList.add('switch');
     sliderRound.classList.add('slider','sliderRound');
     elementToDo.classList.add('defaultDisplay');
+    descriptionDisplay.classList.add('description');
     checkDisplay.addEventListener('change',()=> {
         displayMe.check()
         todoBackgroundColor(elementToDo,displayMe.getCheckState(),displayMe)
@@ -147,6 +160,7 @@ const elementToDo = (displayMe)=> {
     details.addEventListener('click',(e)=>{
         changeDisplayClass(e.target.parentNode);
         displayDescription(e.target.parentNode);
+        infoText(details);
     });
     removeTodo.addEventListener('click',()=>{
         deleteTodo(toDos.indexOf(displayMe));
@@ -160,13 +174,13 @@ const priorityColor = (priority)=> {
     let color;
     switch (priority) {
         case 'low':
-            color = 'yellow';
+            color = 'rgb(245, 221, 66)';
         break;
         case 'mid':
-            color = 'orange';
+            color = 'rgb(245, 164, 66)';
         break;
         case 'high':
-            color = 'red';
+            color = 'rgb(245, 87, 66)';
         break;
     }
     return color
@@ -174,18 +188,29 @@ const priorityColor = (priority)=> {
 
 //GREEN BACKGROUND IF CHECKED
 const todoBackgroundColor = (elementTodo,checkedState,displayMe)=> {
-    if (checkedState) elementTodo.style.backgroundColor = "green";
+    if (checkedState) elementTodo.style.backgroundColor = "rgb(108, 255, 79)";
     else if (!checkedState) elementTodo.style.backgroundColor = priorityColor(displayMe.getPriority());
 }
 
 //APPEND TODO
 const appendTodo = (appendMe)=> {
-    document.getElementById('todosList').appendChild(elementToDo(appendMe));
+    const el = elementToDo(appendMe);
+    var seconds = 500/1000;
+    el.style.opacity = 0;
+    document.getElementById('todosList').appendChild(el);
+    setTimeout(function() {
+        el.style.opacity = 1;
+    });
 }
 
 //REMOVE TODO ELEMENT
 const removeTodoElement = (removeMe)=> {
-    removeMe.parentNode.removeChild(removeMe);
+    var seconds = 300/1000;
+    removeMe.style.opacity = 0;
+    setTimeout(function() {
+        removeMe.parentNode.removeChild(removeMe);
+    }, 500);
+
 }
 
 //REMOVE ALL TODOS ELEMENTS
@@ -203,13 +228,18 @@ const changeDisplayClass = (parentNode)=> {
    parentNode.classList.toggle('detailDisplay');
 }
 
-const displayDescription = (parentNode)=> {
-    if(parentNode.classList.contains('defaultDisplay')) {
-        parentNode.childNodes[6].style.display = 'none';
+const displayDescription = (parentNode, descriptionElement)=> {       //cambiar por append y remove
+    if(parentNode.classList.contains('defaultDisplay')) {                //si no esta el elemento,
+        parentNode.childNodes[5].style.display = 'none';                //append
     }
     else {
-        parentNode.childNodes[6].style.display = 'block';
+        parentNode.childNodes[5].style.display = 'block';               //erem
     } 
+}
+
+const infoText = (element)=> {
+    if (element.textContent == '+ info') element.textContent = '- info';
+    else if (element.textContent == '- info') element.textContent = '+ info'
 }
 
 //PROJECT FORM
@@ -221,7 +251,7 @@ const projectForm = ()=> {
     const close = document.createElement('button');
     nameInput.placeholder = 'Name';
     create.textContent = 'Create';
-    close.textContent = 'Close';
+    close.textContent = 'X';
     container.append(textIndication,nameInput,create,close);
     container.id = 'projectForm';
     create.addEventListener('click', ()=> {
@@ -253,7 +283,13 @@ const checkNewTodoProject = ()=> {
 
 //REMOVE PROJECT 
 const removeProject = (projectDisplay)=> {
-    projectDisplay.parentNode.removeChild(projectDisplay);
+    var seconds = 300/1000;
+    projectDisplay.style.opacity = 1;
+    projectDisplay.style.transition = "opacity "+seconds+"s ease";
+    projectDisplay.style.opacity = 0;
+    setTimeout(function() {
+        projectDisplay.parentNode.removeChild(projectDisplay);
+    }, 500);
 }
 
 //PROJECT LIST
@@ -323,19 +359,5 @@ const blurEffect = ()=> {
 
 export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,hideForm,removeTodosElements, blurEffect}
 
-
-console.log(format(new Date(2014, 1, 11), 'yyyy-MM-dd'));
-
-//FORM INVALIDA: CAMBIAR CARTELITO SIMPATICO POR ADD CLASS INVALID¿?
-
-//enchular forms, display todo, description apareciendo abajo, transiciones
-
-/*function removeFadeOut( el, speed ) {
-    var seconds = speed/1000;
-    el.style.transition = "opacity "+seconds+"s ease";
-
-    el.style.opacity = 0;
-    setTimeout(function() {
-        el.parentNode.removeChild(el);
-    }, speed);
-}*/
+//unificar append y removes en una sola funcion, queda pendiente append project
+//enchular buttons, description como lo mostramos?
