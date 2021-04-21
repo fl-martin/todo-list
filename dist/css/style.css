@@ -3,7 +3,7 @@ body {
 }
 
 #content {
-  background-color:blanchedalmond; ;
+  background-color:rgb(255, 247, 235); ;
   display: grid;
   height: 100vh;
   width: 100%;
@@ -14,7 +14,7 @@ body {
 #banner {
   background-color: rgb(8, 1, 7);
   padding-left: 0.8em;
-  color: blanchedalmond;;
+  color:rgb(255, 247, 235);
   font-size: 3em;
   line-height: 2em;
   height: auto;
@@ -28,7 +28,7 @@ body {
 }
 
 #projectsMenu {
-  color: blanchedalmond;;
+  color: rgb(255, 247, 235);
   flex-grow: 0;
   width: 20%;
   text-align: center ;
@@ -134,7 +134,7 @@ body {
 }
 
 #footer a {
-  color: rgb(8, 1, 7);
+  color: rgb(88, 34, 80);
 }
 
 #form,#projectForm {
@@ -211,7 +211,7 @@ body {
   width: 1em;
   left: 4px;
   bottom: 4px;
-  background-color: blanchedalmond;;
+  background-color: rgb(255, 247, 235);
   -webkit-transition: .4s;
   transition: .4s;
   }
@@ -241,3 +241,5 @@ body {
   .blurred {
   filter: blur(2px);
 }
+
+

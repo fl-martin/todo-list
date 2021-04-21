@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 
-import {toDo,toDos,projects,createProject,deleteTodo,deleteProject} from "./logic.js";
+import {toDo,toDos,projects,createProject,deleteTodo,deleteProject,addToDo} from "./logic.js";
 
 //FORM TO CREATE TODO
 const toDoForm = ()=> {
@@ -104,16 +104,6 @@ const hideForm = (formid)=> {
     setTimeout(function() {
     document.getElementById(formid).style.display = "none";
     }, 500);
-}
-
-//TAKES VALUES INSERTED BY USER TO CREATE NEW TODO AND PUSH IT TO THE ARRAY / CLEAR THE FORM
-const addToDo = ()=> {   
-    const name = document.getElementById('name').value;
-    const date = document.getElementById('date').value;
-    const description = document.getElementById('description').value;
-    const priority = document.getElementById('form').elements['priority'].value;
-    const projectID = document.getElementById('projectID').options[document.getElementById('projectID').selectedIndex].dataset.projectID; //ACCESS DATASET OF SELECTED OPTION
-    toDos.push(toDo(name,date,description,priority,projectID));
 }
 
 const clearForm = ()=> {
@@ -361,3 +351,4 @@ export {projectForm,refreshProjects,displayProject,toDoForm,displayForm,hideForm
 
 //unificar append y removes en una sola funcion, queda pendiente append project
 //enchular buttons, description como lo mostramos?
+//local storage
